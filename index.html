@@ -1,0 +1,50 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Structure UI Docs</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header>
+    <h1>Structure UI Library v1.0.3</h1>
+    <p>Roblox LuaU UI Library</p>
+</header>
+
+<main>
+<section>
+    <h2>Window</h2>
+    <p>Creates a new window.</p>
+    <pre><code>
+local win = UI:Window("Admin Panel")
+win:BindToggle(Enum.KeyCode.RightShift)
+    </code></pre>
+</section>
+
+<section>
+    <h2>Tab</h2>
+    <p>Adds a tab inside a window.</p>
+    <pre><code>
+local main = win:Tab("Main")
+main:Button("Hello", function() print("Hello") end)
+main:Slider("Speed", 16, 200, function(v) ... end)
+main:Dropdown("Team", {"Red","Blue","Green"}, function(v) ... end)
+    </code></pre>
+</section>
+
+<section>
+    <h2>Notifications</h2>
+    <p>Displays a popup notification:</p>
+    <pre><code>
+UI:Notify("Info", "Panel loaded", 3)
+    </code></pre>
+</section>
+
+<!-- Add more sections for Toggle, Theme, etc. -->
+</main>
+
+<script src="script.js"></script>
+</body>
+</html>

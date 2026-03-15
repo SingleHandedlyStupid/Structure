@@ -1,6 +1,6 @@
 local UI = {}
 UI.__index = UI
-UI.Version = "1.0.4"
+UI.Version = "1.0.5"
 
 -- Destroy previous UI
 if _G.UI then
@@ -327,7 +327,8 @@ function UI:Window(title)
 
         -- ====== Dropdown ======
         function tab:Dropdown(text,options,callback)
-            local ddFrame = Instance.new("Frame")
+            local ddFrame = Instance.new("TextButton")
+            ddFrame.Text = ""
             ddFrame.Size = UDim2.new(1,0,0,30)
             ddFrame.BackgroundColor3 = UI.Theme.fg
             ddFrame.Parent = page

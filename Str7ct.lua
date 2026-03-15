@@ -1,6 +1,8 @@
 local UI = {}
 UI.__index = UI
 
+UI.Version = "1.0.2"
+
 -- destroy old UI
 if _G.UI then
 	_G.UI:Destroy()

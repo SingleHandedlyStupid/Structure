@@ -1,6 +1,6 @@
 local UI = {}
 UI.__index = UI
-UI.Version = "1.0.5"
+UI.Version = "1.0.6"
 
 -- Destroy previous UI
 if _G.UI then
@@ -383,6 +383,12 @@ function UI:Window(title)
     end
 
     return window
+end
+
+function UI:Destroy()
+    if _G.UI then
+    _G.UI:Destroy()
+    end
 end
 
 return UI

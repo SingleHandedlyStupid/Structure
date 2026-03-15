@@ -1,6 +1,6 @@
 local UI = {}
 UI.__index = UI
-UI.Version = "1.0.3"
+UI.Version = "1.0.4"
 
 -- Destroy previous UI
 if _G.UI then
@@ -85,7 +85,7 @@ function UI:Window(title)
     frame.Position = UDim2.new(.25,0,.25,0)
     frame.BackgroundColor3 = UI.Theme.bg
     frame.Parent = UI.Main
-    self:Round(frame,10)
+    UI:Round(frame,10)
     self:Stroke(frame)
 
     -- Title bar
@@ -97,7 +97,7 @@ function UI:Window(title)
     titleBar.Font = Enum.Font.GothamBold
     titleBar.TextSize = 16
     titleBar.Parent = frame
-    self:Round(titleBar,10)
+    UI:Round(titleBar,10)
     self:Stroke(titleBar)
     self:MakeDraggable(titleBar)
 
@@ -152,7 +152,7 @@ function UI:Window(title)
         notif.Position = UDim2.new(1,-260,1,-70)
         notif.BackgroundColor3 = UI.Theme.fg
         notif.Parent = UI.Main
-        self:Round(notif,8)
+        UI:Round(notif,8)
 
         local t = Instance.new("TextLabel")
         t.Size = UDim2.new(1,0,0,20)
@@ -193,7 +193,7 @@ function UI:Window(title)
         tabButton.BackgroundColor3 = UI.Theme.fg
         tabButton.TextColor3 = UI.Theme.tx
         tabButton.Parent = tabButtons
-        self:Round(tabButton,6)
+        UI:Round(tabButton,6)
 
         -- Scrollable page
         local page = Instance.new("ScrollingFrame")

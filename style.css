@@ -1,0 +1,17 @@
+body {
+    background: #1c1c1c;
+    color: #fff;
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+header { text-align: center; padding: 20px; }
+main { padding: 20px; }
+pre {
+    background: #2a2a2a;
+    padding: 10px;
+    border-radius: 6px;
+    overflow-x: auto;
+}
+code { color: #0af; }

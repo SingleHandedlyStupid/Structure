@@ -1,183 +1,312 @@
--- // UI Library
 local UI = {}
 UI.__index = UI
 
-UI.Version = "1.0.1"
-UI.ReleaseDate = "Sun Mar 15 2026"
-
--- remove old ui
+-- destroy old UI
 if _G.UI then
 	_G.UI:Destroy()
-	_G.UI = nil
 end
 
 local CoreGui = game:GetService("CoreGui")
 local UIS = game:GetService("UserInputService")
 
--- theme
 UI.bg = Color3.fromRGB(30,30,30)
 UI.fg = Color3.fromRGB(45,45,45)
-UI.tx = Color3.fromRGB(255,255,255)
-UI.stroke = Color3.fromRGB(70,70,70)
+UI.accent = Color3.fromRGB(0,170,255)
+UI.tx = Color3.new(1,1,1)
 
--- main container
+------------------------------------------------
+-- main gui
+------------------------------------------------
+
 UI.Main = Instance.new("ScreenGui")
 UI.Main.Name = "UILibrary"
 UI.Main.Parent = CoreGui
 _G.UI = UI.Main
 
---------------------------------------------------
--- helper: round
---------------------------------------------------
+------------------------------------------------
+-- helpers
+------------------------------------------------
 
-function UI:Round(gui, radius)
+function UI:Round(gui,r)
 	local c = Instance.new("UICorner")
-	c.CornerRadius = UDim.new(0, radius or 6)
+	c.CornerRadius = UDim.new(0,r or 6)
 	c.Parent = gui
 end
 
---------------------------------------------------
--- helper: stroke
---------------------------------------------------
-
 function UI:Stroke(gui)
 	local s = Instance.new("UIStroke")
-	s.Color = self.stroke
-	s.Thickness = 1
+	s.Color = Color3.fromRGB(70,70,70)
 	s.Parent = gui
 end
 
---------------------------------------------------
--- drag
---------------------------------------------------
-
-function UI:MakeDraggable(gui)
-	local dragging = false
-	local dragStart
-	local startPos
+function UI:Drag(gui)
+	local drag = false
+	local start
+	local pos
 
 	local function update(input)
-		local delta = input.Position - dragStart
+		local delta = input.Position - start
 		gui.Position = UDim2.new(
-			startPos.X.Scale,
-			startPos.X.Offset + delta.X,
-			startPos.Y.Scale,
-			startPos.Y.Offset + delta.Y
+			pos.X.Scale,
+			pos.X.Offset + delta.X,
+			pos.Y.Scale,
+			pos.Y.Offset + delta.Y
 		)
 	end
 
 	gui.InputBegan:Connect(function(input)
 		if input.UserInputType == Enum.UserInputType.MouseButton1 then
-			dragging = true
-			dragStart = input.Position
-			startPos = gui.Position
+			drag = true
+			start = input.Position
+			pos = gui.Position
 
 			input.Changed:Connect(function()
 				if input.UserInputState == Enum.UserInputState.End then
-					dragging = false
+					drag = false
 				end
 			end)
 		end
 	end)
 
 	UIS.InputChanged:Connect(function(input)
-		if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
+		if drag and input.UserInputType == Enum.UserInputType.MouseMovement then
 			update(input)
 		end
 	end)
 end
 
---------------------------------------------------
+------------------------------------------------
 -- window
---------------------------------------------------
+------------------------------------------------
 
-function UI:Window(title, size)
+function UI:Window(title)
 
-	local Frame = Instance.new("Frame")
-	Frame.Size = size or UDim2.new(.4,0,.4,0)
-	Frame.Position = UDim2.new(.3,0,.3,0)
-	Frame.BackgroundColor3 = self.bg
-	Frame.Parent = self.Main
+	local frame = Instance.new("Frame")
+	frame.Size = UDim2.new(.45,0,.5,0)
+	frame.Position = UDim2.new(.25,0,.25,0)
+	frame.BackgroundColor3 = UI.bg
+	frame.Parent = UI.Main
 
-	self:Round(Frame,10)
-	self:Stroke(Frame)
-	self:MakeDraggable(Frame)
+	self:Round(frame,10)
+	self:Stroke(frame)
+	self:Drag(frame)
 
-	-- title bar
-	local Title = Instance.new("TextLabel")
-	Title.Size = UDim2.new(1,0,0,32)
-	Title.BackgroundColor3 = self.fg
-	Title.Text = title or "Window"
-	Title.TextColor3 = self.tx
-	Title.TextSize = 16
-	Title.Font = Enum.Font.GothamBold
-	Title.Parent = Frame
+	local titleBar = Instance.new("TextLabel")
+	titleBar.Size = UDim2.new(1,0,0,32)
+	titleBar.Text = title
+	titleBar.BackgroundColor3 = UI.fg
+	titleBar.TextColor3 = UI.tx
+	titleBar.Font = Enum.Font.GothamBold
+	titleBar.TextSize = 16
+	titleBar.Parent = frame
 
-	self:Round(Title,10)
-	self:Stroke(Title)
+	self:Round(titleBar,10)
 
-	-- container
-	local Container = Instance.new("Frame")
-	Container.Size = UDim2.new(1,-10,1,-42)
-	Container.Position = UDim2.new(0,5,0,37)
-	Container.BackgroundTransparency = 1
-	Container.Parent = Frame
+	--------------------------------
+	-- tab buttons
+	--------------------------------
 
-	-- auto layout
-	local Layout = Instance.new("UIListLayout")
-	Layout.Padding = UDim.new(0,6)
-	Layout.SortOrder = Enum.SortOrder.LayoutOrder
-	Layout.Parent = Container
+	local tabButtons = Instance.new("Frame")
+	tabButtons.Size = UDim2.new(0,120,1,-32)
+	tabButtons.Position = UDim2.new(0,0,0,32)
+	tabButtons.BackgroundColor3 = UI.bg
+	tabButtons.Parent = frame
 
-	local Window = {}
-	Window.Container = Container
+	local tabLayout = Instance.new("UIListLayout")
+	tabLayout.Parent = tabButtons
+	tabLayout.Padding = UDim.new(0,6)
 
-	--------------------------------------------------
-	-- label
-	--------------------------------------------------
+	--------------------------------
+	-- page container
+	--------------------------------
 
-	function Window:Label(text)
+	local pages = Instance.new("Frame")
+	pages.Size = UDim2.new(1,-120,1,-32)
+	pages.Position = UDim2.new(0,120,0,32)
+	pages.BackgroundTransparency = 1
+	pages.Parent = frame
 
-		local Label = Instance.new("TextLabel")
-		Label.Size = UDim2.new(1,0,0,25)
-		Label.BackgroundTransparency = 1
-		Label.Text = text or "Label"
-		Label.TextColor3 = UI.tx
-		Label.TextSize = 14
-		Label.Font = Enum.Font.Gotham
-		Label.Parent = Container
+	local window = {}
 
-		return Label
-	end
+	------------------------------------------------
+	-- create tab
+	------------------------------------------------
 
-	--------------------------------------------------
-	-- button
-	--------------------------------------------------
+	function window:Tab(name)
 
-	function Window:Button(text, callback)
+		local tabButton = Instance.new("TextButton")
+		tabButton.Size = UDim2.new(1,-10,0,30)
+		tabButton.Text = name
+		tabButton.BackgroundColor3 = UI.fg
+		tabButton.TextColor3 = UI.tx
+		tabButton.Parent = tabButtons
 
-		local Button = Instance.new("TextButton")
-		Button.Size = UDim2.new(1,0,0,30)
-		Button.BackgroundColor3 = UI.fg
-		Button.Text = text or "Button"
-		Button.TextColor3 = UI.tx
-		Button.TextSize = 14
-		Button.Font = Enum.Font.Gotham
-		Button.Parent = Container
+		UI:Round(tabButton,6)
 
-		UI:Round(Button,8)
-		UI:Stroke(Button)
+		local page = Instance.new("Frame")
+		page.Size = UDim2.new(1,0,1,0)
+		page.BackgroundTransparency = 1
+		page.Visible = false
+		page.Parent = pages
 
-		Button.MouseButton1Click:Connect(function()
-			if callback then
-				callback()
+		local layout = Instance.new("UIListLayout")
+		layout.Padding = UDim.new(0,6)
+		layout.Parent = page
+
+		tabButton.MouseButton1Click:Connect(function()
+
+			for _,p in pairs(pages:GetChildren()) do
+				if p:IsA("Frame") then
+					p.Visible = false
+				end
 			end
+
+			page.Visible = true
 		end)
 
-		return Button
+		local tab = {}
+
+		------------------------------------------------
+		-- label
+		------------------------------------------------
+
+		function tab:Label(text)
+
+			local l = Instance.new("TextLabel")
+			l.Size = UDim2.new(1,0,0,24)
+			l.Text = text
+			l.TextColor3 = UI.tx
+			l.BackgroundTransparency = 1
+			l.Parent = page
+		end
+
+		------------------------------------------------
+		-- button
+		------------------------------------------------
+
+		function tab:Button(text,callback)
+
+			local b = Instance.new("TextButton")
+			b.Size = UDim2.new(1,0,0,30)
+			b.Text = text
+			b.BackgroundColor3 = UI.fg
+			b.TextColor3 = UI.tx
+			b.Parent = page
+
+			UI:Round(b,6)
+
+			b.MouseButton1Click:Connect(function()
+				if callback then
+					callback()
+				end
+			end)
+		end
+
+		------------------------------------------------
+		-- toggle
+		------------------------------------------------
+
+		function tab:Toggle(text,callback)
+
+			local state = false
+
+			local b = Instance.new("TextButton")
+			b.Size = UDim2.new(1,0,0,30)
+			b.Text = text.." : OFF"
+			b.BackgroundColor3 = UI.fg
+			b.TextColor3 = UI.tx
+			b.Parent = page
+
+			UI:Round(b,6)
+
+			b.MouseButton1Click:Connect(function()
+
+				state = not state
+
+				b.Text = text.." : "..(state and "ON" or "OFF")
+
+				if callback then
+					callback(state)
+				end
+			end)
+		end
+
+		------------------------------------------------
+		-- slider
+		------------------------------------------------
+
+		function tab:Slider(text,min,max,callback)
+
+			local value = min
+
+			local frame = Instance.new("Frame")
+			frame.Size = UDim2.new(1,0,0,40)
+			frame.BackgroundTransparency = 1
+			frame.Parent = page
+
+			local label = Instance.new("TextLabel")
+			label.Size = UDim2.new(1,0,0,16)
+			label.Text = text.." : "..value
+			label.BackgroundTransparency = 1
+			label.TextColor3 = UI.tx
+			label.Parent = frame
+
+			local bar = Instance.new("Frame")
+			bar.Size = UDim2.new(1,0,0,10)
+			bar.Position = UDim2.new(0,0,0,22)
+			bar.BackgroundColor3 = UI.fg
+			bar.Parent = frame
+
+			UI:Round(bar,6)
+
+			local fill = Instance.new("Frame")
+			fill.Size = UDim2.new(0,0,1,0)
+			fill.BackgroundColor3 = UI.accent
+			fill.Parent = bar
+
+			UI:Round(fill,6)
+
+			local dragging = false
+
+			bar.InputBegan:Connect(function(i)
+				if i.UserInputType == Enum.UserInputType.MouseButton1 then
+					dragging = true
+				end
+			end)
+
+			UIS.InputEnded:Connect(function(i)
+				if i.UserInputType == Enum.UserInputType.MouseButton1 then
+					dragging = false
+				end
+			end)
+
+			UIS.InputChanged:Connect(function(i)
+
+				if dragging and i.UserInputType == Enum.UserInputType.MouseMovement then
+
+					local percent = math.clamp(
+						(i.Position.X - bar.AbsolutePosition.X) / bar.AbsoluteSize.X,
+						0,
+						1
+					)
+
+					fill.Size = UDim2.new(percent,0,1,0)
+
+					value = math.floor(min + (max-min)*percent)
+
+					label.Text = text.." : "..value
+
+					if callback then
+						callback(value)
+					end
+				end
+			end)
+		end
+
+		return tab
 	end
 
-	return Window
+	return window
 end
 
 return UI
